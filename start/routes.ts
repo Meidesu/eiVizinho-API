@@ -45,4 +45,4 @@ router.get('/ruan', '#controllers/ruans_controller.hello')
 router.post('/ruan', '#controllers/ruans_controller.postar')
 
 router.get('/alerts_contegory', '#controllers/alert_categories_controller.getAll')
-// router.post('/alerts_contegory', '#controllers/alert_categories_controller.create')
+router.post('/alerts_contegory', '#controllers/alert_categories_controller.create')
