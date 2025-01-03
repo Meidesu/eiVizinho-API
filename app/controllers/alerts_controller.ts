@@ -1,11 +1,7 @@
 import AlertNotFoundException from '#exceptions/alert_not_found_exception'
 import Alert from '#models/alert'
 import AlertCategory from '#models/alert_category'
-import {
-  CreateAlertValidator,
-  AlertResponseValidator,
-  UpdateAlertValidator,
-} from '#validators/alert_validator'
+import { CreateAlertValidator, UpdateAlertValidator } from '#validators/alert_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AlertsController {
@@ -42,16 +38,28 @@ export default class AlertsController {
    */
   async getAll({ response }: HttpContext) {
     const data = await Alert.query().preload('categories')
-    // const payload = await Promise.all(
-    //   data.map(async (alert) => {
-    //     const validatedData = await AlertResponseValidator.validate(alert)
-    //     return { ...alert.toJSON(), ...validatedData }
-    //   })
-    // )
 
     data.sort((a, b) => b.updatedAt.toJSDate().getTime() - a.updatedAt.toJSDate().getTime())
 
     return response.status(200).send(data)
+  }
+
+  /**
+   *
+   * @getById
+   * @paramPath id - Id do alerta - @type(number) @required
+   * @responseBody 200 - <AlertResponseValidator>
+   */
+  async getById({ params, response }: HttpContext) {
+    const alert = await Alert.find(params.id)
+
+    if (!alert) {
+      throw new AlertNotFoundException(`Alerta com id ${params.id} não foi encontrado`)
+    }
+
+    await alert.load('categories')
+
+    return response.status(200).json(alert)
   }
 
   /**
@@ -65,12 +73,7 @@ export default class AlertsController {
     const alert = await Alert.find(params.id)
 
     if (!alert) {
-      return response.status(404).json({ error: `Alerta com id ${params.id} não foi encontrado` })
-
-      // TODO: não gostei muito do resultado
-      // throw new AlertNotFoundException(`Alerta com id ${params.id} não foi encontrado`, {
-      //   status: 404,
-      // })
+      throw new AlertNotFoundException(`Alerta com id ${params.id} não foi encontrado`)
     }
 
     const { name, categoriesId } = await request.validateUsing(UpdateAlertValidator)
@@ -90,6 +93,26 @@ export default class AlertsController {
     await alert.related('categories').sync(categoriesId)
 
     await alert.load('categories')
+
+    return response.status(200).json(alert)
+  }
+
+  /**
+   *
+   * @delete
+   * @paramPath id - Id do alerta - @type(number) @required
+   * @responseBody 200 - <AlertResponseValidator>
+   */
+  async delete({ params, response }: HttpContext) {
+    const alert = await Alert.find(params.id)
+
+    if (!alert) {
+      throw new AlertNotFoundException(`Alerta com id ${params.id} não foi encontrado`)
+    }
+
+    alert.load('categories')
+
+    await alert.delete()
 
     return response.status(200).json(alert)
   }
