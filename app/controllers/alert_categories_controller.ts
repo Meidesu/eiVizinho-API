@@ -1,5 +1,5 @@
 import AlertCategory from '#models/alert_category'
-import CreateAlertCategoryValidator from '#validators/alert_category_validator'
+import { CreateAlertCategoryValidator } from '#validators/alert_category_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AlertCategoriesController {
@@ -16,7 +16,7 @@ export default class AlertCategoriesController {
 
   /**
    * @create
-   * @requestBody  {"name": "string", "gravity": "float", "description": "string"}
+   * @requestBody  <CreateAlertCategoryValidator>
    */
   async create({ request }: HttpContext) {
     const payload = await request.validateUsing(CreateAlertCategoryValidator)
@@ -24,3 +24,5 @@ export default class AlertCategoriesController {
     return AlertCategory.create(payload)
   }
 }
+
+// * @requestBody  {"name": "string", "gravity": 0, "description": "string"}

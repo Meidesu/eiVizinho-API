@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 
-const CreateAlertCategoryValidator = vine.compile(
+export const CreateAlertCategoryValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(1),
     description: vine.string().trim().minLength(1),
@@ -8,4 +8,11 @@ const CreateAlertCategoryValidator = vine.compile(
   })
 )
 
-export default CreateAlertCategoryValidator
+export const AlertCategoryResponseValidator = vine.object({
+  id: vine.number(),
+  createdAt: vine.string(),
+  updatedAt: vine.string(),
+  name: vine.string().trim(),
+  gravity: vine.number(),
+  description: vine.string().trim(),
+})

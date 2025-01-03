@@ -41,8 +41,10 @@ router.get('/docs', async () => {
 })
 
 router.get('/ruan', '#controllers/ruans_controller.hello')
-
 router.post('/ruan', '#controllers/ruans_controller.postar')
 
 router.get('/alerts_contegory', '#controllers/alert_categories_controller.getAll')
 router.post('/alerts_contegory', '#controllers/alert_categories_controller.create')
+
+router.post('alerts', '#controllers/alerts_controller.create')
+router.get('alerts', '#controllers/alerts_controller.getAll')

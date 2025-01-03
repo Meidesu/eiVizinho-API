@@ -26,7 +26,4 @@ export default {
   defaultSecurityScheme: 'BearerAuth', // optional
   persistAuthorization: true, // persist authorization between reloads on the swagger page
   showFullPath: false, // the path displayed after endpoint summary
-  paths: {
-    validators: '#validators/', // Caminho para seus validators
-  },
 }
