@@ -1,6 +1,11 @@
+import AlertNotFoundException from '#exceptions/alert_not_found_exception'
 import Alert from '#models/alert'
 import AlertCategory from '#models/alert_category'
-import { CreateAlertValidator, AlertResponseValidator } from '#validators/alert_validator'
+import {
+  CreateAlertValidator,
+  AlertResponseValidator,
+  UpdateAlertValidator,
+} from '#validators/alert_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AlertsController {
@@ -12,7 +17,7 @@ export default class AlertsController {
   async create({ request, response }: HttpContext) {
     const payload = await request.validateUsing(CreateAlertValidator)
 
-    for (const id of payload.categories_id) {
+    for (const id of payload.categoriesId) {
       try {
         await AlertCategory.findOrFail(id)
       } catch (err: any) {
@@ -24,7 +29,7 @@ export default class AlertsController {
 
     const alert = await Alert.create({ name: payload.name })
 
-    await alert.related('categories').attach(payload.categories_id)
+    await alert.related('categories').attach(payload.categoriesId)
 
     await alert.load('categories')
 
@@ -44,6 +49,48 @@ export default class AlertsController {
     //   })
     // )
 
+    data.sort((a, b) => b.updatedAt.toJSDate().getTime() - a.updatedAt.toJSDate().getTime())
+
     return response.status(200).send(data)
+  }
+
+  /**
+   *
+   * @update
+   * @paramPath id - Id do alerta - @type(number) @required
+   * @requestBody <UpdateAlertValidator>
+   * @responseBody 200 - <AlertResponseValidator>
+   */
+  async update({ params, request, response }: HttpContext) {
+    const alert = await Alert.find(params.id)
+
+    if (!alert) {
+      return response.status(404).json({ error: `Alerta com id ${params.id} não foi encontrado` })
+
+      // TODO: não gostei muito do resultado
+      // throw new AlertNotFoundException(`Alerta com id ${params.id} não foi encontrado`, {
+      //   status: 404,
+      // })
+    }
+
+    const { name, categoriesId } = await request.validateUsing(UpdateAlertValidator)
+
+    for (const id of categoriesId) {
+      try {
+        await AlertCategory.findOrFail(id)
+      } catch (err: any) {
+        return response
+          .status(400)
+          .send({ error: `Categoria de alerta com id ${id} é inválida ou não existe` })
+      }
+    }
+
+    await alert.merge({ name }).save()
+
+    await alert.related('categories').sync(categoriesId)
+
+    await alert.load('categories')
+
+    return response.status(200).json(alert)
   }
 }
