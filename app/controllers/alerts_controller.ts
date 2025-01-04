@@ -1,7 +1,11 @@
 import AlertNotFoundException from '#exceptions/alert_not_found_exception'
 import Alert from '#models/alert'
 import AlertCategory from '#models/alert_category'
-import { CreateAlertValidator, UpdateAlertValidator } from '#validators/alert_validator'
+import {
+  AlertResponseValidator,
+  CreateAlertValidator,
+  UpdateAlertValidator,
+} from '#validators/alert_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AlertsController {
@@ -26,10 +30,23 @@ export default class AlertsController {
     const alert = await Alert.create({ name: payload.name })
 
     await alert.related('categories').attach(payload.categoriesId)
-
     await alert.load('categories')
 
-    return response.status(201).send(alert)
+    await alert.related('location').create({ description: `descrição do ${payload.name}` })
+    await alert.load('location')
+
+    await alert.location.related('coord').create(payload.location)
+    await alert.location.load('coord')
+
+    console.log(alert)
+
+    const validated = await AlertResponseValidator.validate({
+      ...alert.toJSON(),
+      createdAt: alert.createdAt.toISODate(),
+      updatedAt: alert.updatedAt.toISODate(),
+    })
+
+    return response.status(201).send(validated)
   }
 
   /**
@@ -37,11 +54,25 @@ export default class AlertsController {
    * @responseBody 200 - <AlertResponseValidator[]>
    */
   async getAll({ response }: HttpContext) {
-    const data = await Alert.query().preload('categories')
+    const data = await Alert.query()
+      .preload('categories')
+      .preload('location', (query) => {
+        query.preload('coord')
+      })
 
     data.sort((a, b) => b.updatedAt.toJSDate().getTime() - a.updatedAt.toJSDate().getTime())
 
-    return response.status(200).send(data)
+    const validatedData = await Promise.all(
+      data.map(async (alert) => {
+        return await AlertResponseValidator.validate({
+          ...alert.toJSON(),
+          createdAt: alert.createdAt.toISODate(),
+          updatedAt: alert.updatedAt.toISODate(),
+        })
+      })
+    )
+
+    return response.status(200).send(validatedData)
   }
 
   /**
@@ -59,7 +90,17 @@ export default class AlertsController {
 
     await alert.load('categories')
 
-    return response.status(200).json(alert)
+    await alert.load('location', (query) => {
+      query.preload('coord')
+    })
+
+    const validated = await AlertResponseValidator.validate({
+      ...alert.toJSON(),
+      createdAt: alert.createdAt.toISODate(),
+      updatedAt: alert.updatedAt.toISODate(),
+    })
+
+    return response.status(200).json(validated)
   }
 
   /**
@@ -94,7 +135,17 @@ export default class AlertsController {
 
     await alert.load('categories')
 
-    return response.status(200).json(alert)
+    await alert.load('location', (query) => {
+      query.preload('coord')
+    })
+
+    const validated = await AlertResponseValidator.validate({
+      ...alert.toJSON(),
+      createdAt: alert.createdAt.toISODate(),
+      updatedAt: alert.updatedAt.toISODate(),
+    })
+
+    return response.status(200).json(validated)
   }
 
   /**
@@ -104,13 +155,20 @@ export default class AlertsController {
    * @responseBody 200 - <AlertResponseValidator>
    */
   async delete({ params, response }: HttpContext) {
-    const alert = await Alert.find(params.id)
+    const alert = await Alert.query()
+      .where('id', params.id)
+      .preload('categories')
+      .preload('location', (query) => {
+        query.preload('coord')
+      })
+      .first()
 
     if (!alert) {
       throw new AlertNotFoundException(`Alerta com id ${params.id} não foi encontrado`)
     }
 
-    alert.load('categories')
+    await alert.related('categories').detach()
+    await alert.related('location').query().delete()
 
     await alert.delete()
 

@@ -5,6 +5,10 @@ export const CreateAlertValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(1),
     categoriesId: vine.array(vine.number()),
+    location: vine.object({
+      latitude: vine.number(),
+      longitude: vine.number(),
+    }),
   })
 )
 
@@ -13,6 +17,15 @@ export const AlertResponseValidator = vine.compile(
     id: vine.number(),
     name: vine.string().trim(),
     categories: vine.array(AlertCategoryResponseValidator),
+    location: vine.object({
+      description: vine.string().trim(),
+      coord: vine.object({
+        latitude: vine.number(),
+        longitude: vine.number(),
+      }),
+    }),
+    createdAt: vine.date({ formats: {} }),
+    updatedAt: vine.date({ formats: {} }),
   })
 )
 
