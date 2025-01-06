@@ -7,8 +7,13 @@ import {
   UpdateAlertValidator,
 } from '#validators/alert_validator'
 import type { HttpContext } from '@adonisjs/core/http'
+import GeocodingProvider from '../providers/geocoding_provider.js'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class AlertsController {
+  constructor(private geocodingProvider: GeocodingProvider) {}
+
   /**
    * @create
    * @requestBody <CreateAlertValidator>
@@ -93,6 +98,8 @@ export default class AlertsController {
     await alert.load('location', (query) => {
       query.preload('coord')
     })
+
+    alert.location.description = await this.geocodingProvider.reverseGeocode(alert.location.coord)
 
     const validated = await AlertResponseValidator.validate({
       ...alert.toJSON(),
