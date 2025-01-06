@@ -10,8 +10,6 @@ export const CreateAlertCategoryValidator = vine.compile(
 
 export const AlertCategoryResponseValidator = vine.object({
   id: vine.number(),
-  createdAt: vine.string(),
-  updatedAt: vine.string(),
   name: vine.string().trim(),
   gravity: vine.number(),
   description: vine.string().trim(),
