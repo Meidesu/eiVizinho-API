@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build",
-    "dev": "node ace serve --hmr",
+    "dev": "node ace serve --watch",
     "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -58,6 +58,7 @@
     "@vinejs/vine": "^3.0.0",
     "adonis-autoswagger": "^3.64.0",
     "luxon": "^3.5.0",
+    "opencage-api-client": "^1.0.7",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2"
   },

@@ -1,5 +1,7 @@
+import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import type { ManyToMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import Alert from './alert.js'
 
 export default class AlertCategory extends BaseModel {
   @column({ isPrimary: true })
@@ -13,6 +15,11 @@ export default class AlertCategory extends BaseModel {
 
   @column()
   declare description: string
+
+  @manyToMany(() => Alert, {
+    pivotTable: 'cat_alert',
+  })
+  declare alerts: ManyToMany<typeof Alert>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
