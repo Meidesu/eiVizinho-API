@@ -1,4 +1,3 @@
-import Ruan from '#models/ruan'
 import { ruanValidator } from '#validators/ruan'
 import type { HttpContext } from '@adonisjs/core/http'
 
