@@ -1,7 +1,7 @@
-import { DateTime } from 'luxon'
 import { BaseModel, column, hasOne, manyToMany } from '@adonisjs/lucid/orm'
-import AlertCategory from './alert_category.js'
 import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
+import AlertCategory from './alert_category.js'
 import AlertLocation from './alert_location.js'
 
 export default class Alert extends BaseModel {

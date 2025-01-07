@@ -1,0 +1,1000 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ei Vizinho",
+    "version": "1.0.0",
+    "description": "Api para o app eiVizinho!"
+  },
+  "components": {
+    "responses": {
+      "Forbidden": {
+        "description": "Access token is missing or invalid"
+      },
+      "Accepted": {
+        "description": "The request was accepted"
+      },
+      "Created": {
+        "description": "The resource has been created"
+      },
+      "NotFound": {
+        "description": "The resource has been created"
+      },
+      "NotAcceptable": {
+        "description": "The resource has been created"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "BasicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "schemas": {
+      "Any": {
+        "description": "Any JSON object not defined as schema"
+      },
+      "Alert": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 12
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "location": {
+            "$ref": "#/components/schemas/AlertLocation",
+            "example": null
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlertCategory",
+              "example": null
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          }
+        },
+        "description": "Alert (Model)"
+      },
+      "AlertCategory": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 226
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "gravity": {
+            "type": "number",
+            "example": 131
+          },
+          "description": {
+            "type": "string",
+            "example": "Lorem ipsum dolor sit amet"
+          },
+          "alerts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Alert",
+              "example": null
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          }
+        },
+        "description": "AlertCategory (Model)"
+      },
+      "AlertLocation": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 494
+          },
+          "alert_id": {
+            "type": "number",
+            "example": 211
+          },
+          "coord": {
+            "$ref": "#/components/schemas/Coord",
+            "example": null
+          },
+          "description": {
+            "type": "string",
+            "example": "Lorem ipsum dolor sit amet"
+          }
+        },
+        "description": "AlertLocation (Model)"
+      },
+      "Coord": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 340
+          },
+          "alert_location_id": {
+            "type": "number",
+            "example": 269
+          },
+          "latitude": {
+            "type": "number",
+            "example": 794
+          },
+          "longitude": {
+            "type": "number",
+            "example": 29
+          }
+        },
+        "description": "Coord (Model)"
+      },
+      "Ruan": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 685
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          }
+        },
+        "description": "Ruan (Model)"
+      },
+      "User": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 563
+          },
+          "full_name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "johndoe@example.com",
+            "format": "email"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2021-03-23T16:13:08.489+01:00",
+            "format": "date-time"
+          }
+        },
+        "description": "User (Model)"
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 100,
+            "nullable": false
+          },
+          "page": {
+            "type": "number",
+            "example": 2,
+            "nullable": false
+          },
+          "perPage": {
+            "type": "number",
+            "example": 10,
+            "nullable": false
+          },
+          "currentPage": {
+            "type": "number",
+            "example": 3,
+            "nullable": false
+          },
+          "lastPage": {
+            "type": "number",
+            "example": 10,
+            "nullable": false
+          },
+          "firstPage": {
+            "type": "number",
+            "example": 1,
+            "nullable": false
+          },
+          "lastPageUrl": {
+            "type": "string",
+            "example": "/?page=10",
+            "nullable": false
+          },
+          "firstPageUrl": {
+            "type": "string",
+            "example": "/?page=1",
+            "nullable": false
+          },
+          "nextPageUrl": {
+            "type": "string",
+            "example": "/?page=6",
+            "nullable": false
+          },
+          "previousPageUrl": {
+            "type": "string",
+            "example": "/?page=5",
+            "nullable": false
+          }
+        }
+      },
+      "CreateAlertCategoryValidator": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Lorem Ipsum",
+            "required": true,
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "example": "Lorem Ipsum",
+            "required": true,
+            "minLength": 1
+          },
+          "gravity": {
+            "type": "number",
+            "example": 811,
+            "maximum": 1,
+            "required": true
+          }
+        },
+        "example": {
+          "name": "Lorem Ipsum",
+          "description": "Lorem Ipsum",
+          "gravity": 811
+        },
+        "description": "CreateAlertCategoryValidator (Validator)"
+      },
+      "AlertResponseValidator": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 30,
+            "required": true
+          },
+          "name": {
+            "type": "string",
+            "example": "Lorem Ipsum",
+            "required": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 537,
+                  "required": true
+                },
+                "name": {
+                  "type": "number",
+                  "example": 657,
+                  "required": true
+                },
+                "gravity": {
+                  "type": "number",
+                  "example": 969,
+                  "required": true
+                },
+                "description": {
+                  "type": "number",
+                  "example": 917,
+                  "required": true
+                }
+              }
+            },
+            "required": true,
+            "properties": {
+              "items": {
+                "name": {
+                  "type": "string",
+                  "example": "Lorem Ipsum"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Lorem Ipsum"
+                }
+              }
+            }
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string",
+                "example": "Lorem Ipsum",
+                "required": true
+              },
+              "coord": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number",
+                    "example": 810,
+                    "required": true
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "example": 175,
+                    "required": true
+                  }
+                },
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "createdAt": {
+            "type": "number",
+            "example": 44,
+            "required": true
+          },
+          "updatedAt": {
+            "type": "number",
+            "example": 181,
+            "required": true
+          }
+        },
+        "example": {
+          "id": 30,
+          "name": "Lorem Ipsum",
+          "categories": [
+            {
+              "id": 537,
+              "name": "Lorem Ipsum",
+              "gravity": 969,
+              "description": "Lorem Ipsum"
+            }
+          ],
+          "location": {
+            "description": "Lorem Ipsum",
+            "coord": {
+              "latitude": 810,
+              "longitude": 175
+            }
+          },
+          "createdAt": 44,
+          "updatedAt": 181
+        },
+        "description": "AlertResponseValidator (Validator)"
+      },
+      "CreateAlertValidator": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Lorem Ipsum",
+            "required": true,
+            "minLength": 1
+          },
+          "categoriesId": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "example": 122
+            },
+            "required": true
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "latitude": {
+                "type": "number",
+                "example": 468,
+                "required": true
+              },
+              "longitude": {
+                "type": "number",
+                "example": 541,
+                "required": true
+              }
+            },
+            "required": true
+          }
+        },
+        "example": {
+          "name": "Lorem Ipsum",
+          "categoriesId": [
+            122
+          ],
+          "location": {
+            "latitude": 468,
+            "longitude": 541
+          }
+        },
+        "description": "CreateAlertValidator (Validator)"
+      },
+      "UpdateAlertValidator": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Lorem Ipsum",
+            "required": true
+          },
+          "categoriesId": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "example": 805
+            },
+            "required": true
+          }
+        },
+        "example": {
+          "name": "Lorem Ipsum",
+          "categoriesId": [
+            805
+          ]
+        },
+        "description": "UpdateAlertValidator (Validator)"
+      },
+      "ruanValidator": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Lorem Ipsum",
+            "required": true
+          }
+        },
+        "example": {
+          "name": "Lorem Ipsum"
+        },
+        "description": "ruanValidator (Validator)"
+      }
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "route",
+        "description": "\n\n __ - ****",
+        "parameters": [],
+        "tags": [
+          ""
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/hello": {
+      "get": {
+        "summary": "route",
+        "description": "\n\n __ - ****",
+        "parameters": [],
+        "tags": [
+          "HELLO"
+        ],
+        "responses": {
+          "401": {
+            "description": "Returns **401** (Unauthorized)"
+          },
+          "403": {
+            "description": "Returns **403** (Forbidden)"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": [
+              "access"
+            ]
+          }
+        ]
+      }
+    },
+    "/ruan": {
+      "get": {
+        "summary": " (hello)",
+        "description": "\n\n _app/controllers/ruans_controller.ts_ - **hello**",
+        "parameters": [],
+        "tags": [
+          "RUAN"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": " (postar)",
+        "description": "Post something\n\n _app/controllers/ruans_controller.ts_ - **postar**",
+        "parameters": [],
+        "tags": [
+          "RUAN"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Alert"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 12,
+                    "name": "John Doe",
+                    "location": {
+                      "id": 494,
+                      "alert_id": 211,
+                      "description": "Lorem ipsum dolor sit amet"
+                    },
+                    "categories": [
+                      {
+                        "id": 226,
+                        "name": "John Doe",
+                        "gravity": 131,
+                        "description": "Lorem ipsum dolor sit amet",
+                        "created_at": "2021-03-23T16:13:08.489+01:00",
+                        "updated_at": "2021-03-23T16:13:08.489+01:00"
+                      }
+                    ],
+                    "created_at": "2021-03-23T16:13:08.489+01:00",
+                    "updated_at": "2021-03-23T16:13:08.489+01:00"
+                  }
+                ]
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**",
+            "headers": {
+              "X-pages": {
+                "schema": {
+                  "type": "string",
+                  "example": "test"
+                },
+                "description": "A description of the header"
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/alert_cantegory": {
+      "get": {
+        "summary": " (getAll)",
+        "description": "Returns **200** (OK) as **application/json**\n\n _app/controllers/alert_categories_controller.ts_ - **getAll**",
+        "parameters": [],
+        "tags": [
+          "ALERT_CANTEGORY"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertCategory"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 226,
+                    "name": "John Doe",
+                    "gravity": 131,
+                    "description": "Lorem ipsum dolor sit amet",
+                    "created_at": "2021-03-23T16:13:08.489+01:00",
+                    "updated_at": "2021-03-23T16:13:08.489+01:00"
+                  }
+                ]
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**"
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": " (create)",
+        "description": "\n\n _app/controllers/alert_categories_controller.ts_ - **create**",
+        "parameters": [],
+        "tags": [
+          "ALERT_CANTEGORY"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAlertCategoryValidator"
+              },
+              "example": {
+                "name": "Lorem Ipsum",
+                "description": "Lorem Ipsum",
+                "gravity": 811
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts": {
+      "get": {
+        "summary": " (getAll)",
+        "description": "Returns **200** (OK) as **application/json**\n\n _app/controllers/alerts_controller.ts_ - **getAll**",
+        "parameters": [],
+        "tags": [
+          "ALERTS"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertResponseValidator"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 30,
+                    "name": "Lorem Ipsum",
+                    "categories": [
+                      {
+                        "id": 537,
+                        "name": "Lorem Ipsum",
+                        "gravity": 969,
+                        "description": "Lorem Ipsum"
+                      }
+                    ],
+                    "location": {
+                      "description": "Lorem Ipsum",
+                      "coord": {
+                        "latitude": 810,
+                        "longitude": 175
+                      }
+                    },
+                    "createdAt": 44,
+                    "updatedAt": 181
+                  }
+                ]
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**"
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": " (create)",
+        "description": "\n\n _app/controllers/alerts_controller.ts_ - **create**",
+        "parameters": [],
+        "tags": [
+          "ALERTS"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponseValidator"
+                },
+                "example": {
+                  "id": 30,
+                  "name": "Lorem Ipsum",
+                  "categories": [
+                    {
+                      "id": 537,
+                      "name": "Lorem Ipsum",
+                      "gravity": 969,
+                      "description": "Lorem Ipsum"
+                    }
+                  ],
+                  "location": {
+                    "description": "Lorem Ipsum",
+                    "coord": {
+                      "latitude": 810,
+                      "longitude": 175
+                    }
+                  },
+                  "createdAt": 44,
+                  "updatedAt": 181
+                }
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**"
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAlertValidator"
+              },
+              "example": {
+                "name": "Lorem Ipsum",
+                "categoriesId": [
+                  122
+                ],
+                "location": {
+                  "latitude": 468,
+                  "longitude": 541
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts/{id}": {
+      "get": {
+        "summary": " (getById)",
+        "description": "Returns **200** (OK) as **application/json**\n\n _app/controllers/alerts_controller.ts_ - **getById**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Id do alerta",
+            "schema": {
+              "example": "",
+              "type": "number"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "ALERTS"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponseValidator"
+                },
+                "example": {
+                  "id": 30,
+                  "name": "Lorem Ipsum",
+                  "categories": [
+                    {
+                      "id": 537,
+                      "name": "Lorem Ipsum",
+                      "gravity": 969,
+                      "description": "Lorem Ipsum"
+                    }
+                  ],
+                  "location": {
+                    "description": "Lorem Ipsum",
+                    "coord": {
+                      "latitude": 810,
+                      "longitude": 175
+                    }
+                  },
+                  "createdAt": 44,
+                  "updatedAt": 181
+                }
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**"
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "Update alerts (update)",
+        "description": "\n\n _app/controllers/alerts_controller.ts_ - **update**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Id do alerta",
+            "schema": {
+              "example": "",
+              "type": "number"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "ALERTS"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponseValidator"
+                },
+                "example": {
+                  "id": 30,
+                  "name": "Lorem Ipsum",
+                  "categories": [
+                    {
+                      "id": 537,
+                      "name": "Lorem Ipsum",
+                      "gravity": 969,
+                      "description": "Lorem Ipsum"
+                    }
+                  ],
+                  "location": {
+                    "description": "Lorem Ipsum",
+                    "coord": {
+                      "latitude": 810,
+                      "longitude": 175
+                    }
+                  },
+                  "createdAt": 44,
+                  "updatedAt": 181
+                }
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**"
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAlertValidator"
+              },
+              "example": {
+                "name": "Lorem Ipsum",
+                "categoriesId": [
+                  805
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": " (delete)",
+        "description": "\n\n _app/controllers/alerts_controller.ts_ - **delete**",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Id do alerta",
+            "schema": {
+              "example": "",
+              "type": "number"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "ALERTS"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponseValidator"
+                },
+                "example": {
+                  "id": 30,
+                  "name": "Lorem Ipsum",
+                  "categories": [
+                    {
+                      "id": 537,
+                      "name": "Lorem Ipsum",
+                      "gravity": 969,
+                      "description": "Lorem Ipsum"
+                    }
+                  ],
+                  "location": {
+                    "description": "Lorem Ipsum",
+                    "coord": {
+                      "latitude": 810,
+                      "longitude": 175
+                    }
+                  },
+                  "createdAt": 44,
+                  "updatedAt": 181
+                }
+              }
+            },
+            "description": "Returns **200** (OK) as **application/json**"
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "HELLO",
+      "description": "Everything related to HELLO"
+    },
+    {
+      "name": "RUAN",
+      "description": "Everything related to RUAN"
+    },
+    {
+      "name": "ALERT_CANTEGORY",
+      "description": "Everything related to ALERT_CANTEGORY"
+    },
+    {
+      "name": "ALERTS",
+      "description": "Everything related to ALERTS"
+    }
+  ]
+}

@@ -1,14 +1,15 @@
 import AlertNotFoundException from '#exceptions/alert_not_found_exception'
-import Alert from '#models/alert'
 import AlertCategory from '#models/alert_category'
+
+import type { HttpContext } from '@adonisjs/core/http'
+import GeocodingProvider from '../providers/geocoding_provider.js'
+import { inject } from '@adonisjs/core'
 import {
   AlertResponseValidator,
   CreateAlertValidator,
   UpdateAlertValidator,
-} from '#validators/alert_validator'
-import type { HttpContext } from '@adonisjs/core/http'
-import GeocodingProvider from '../providers/geocoding_provider.js'
-import { inject } from '@adonisjs/core'
+} from '#validators/alert'
+import Alert from '#models/alert'
 
 @inject()
 export default class AlertsController {
