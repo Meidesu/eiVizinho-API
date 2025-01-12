@@ -37,18 +37,18 @@ export default class AlertsController {
     await alert.related('categories').attach(payload.categoriesId)
     await alert.load('categories')
 
-    await alert.related('location').create({ description: `descrição do ${payload.name}` })
+    const location = await this.geocodingProvider.reverseGeocode(payload.location)
+
+    await alert.related('location').create({ description: location })
     await alert.load('location')
 
     await alert.location.related('coord').create(payload.location)
     await alert.location.load('coord')
 
-    console.log(alert)
-
     const validated = await AlertResponseValidator.validate({
       ...alert.toJSON(),
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
+      createdAt: alert.createdAt.toISO(),
+      updatedAt: alert.updatedAt.toISO(),
     })
 
     return response.status(201).send(validated)
@@ -71,8 +71,8 @@ export default class AlertsController {
       data.map(async (alert) => {
         return await AlertResponseValidator.validate({
           ...alert.toJSON(),
-          createdAt: alert.createdAt.toISODate(),
-          updatedAt: alert.updatedAt.toISODate(),
+          createdAt: alert.createdAt.toISO(),
+          updatedAt: alert.updatedAt.toISO(),
         })
       })
     )
@@ -99,12 +99,10 @@ export default class AlertsController {
       query.preload('coord')
     })
 
-    alert.location.description = await this.geocodingProvider.reverseGeocode(alert.location.coord)
-
     const validated = await AlertResponseValidator.validate({
       ...alert.toJSON(),
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
+      createdAt: alert.createdAt.toISO(),
+      updatedAt: alert.updatedAt.toISO(),
     })
 
     return response.status(200).json(validated)
@@ -148,8 +146,8 @@ export default class AlertsController {
 
     const validated = await AlertResponseValidator.validate({
       ...alert.toJSON(),
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
+      createdAt: alert.createdAt.toISO(),
+      updatedAt: alert.updatedAt.toISO(),
     })
 
     return response.status(200).json(validated)

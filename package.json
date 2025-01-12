@@ -55,6 +55,7 @@
     "@adonisjs/core": "^6.17.0",
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.5.1",
+    "@googlemaps/google-maps-services-js": "^3.4.0",
     "@vinejs/vine": "^3.0.0",
     "adonis-autoswagger": "^3.64.0",
     "luxon": "^3.5.0",
