@@ -44,8 +44,8 @@ router.get('/ruan', '#controllers/ruans_controller.hello')
 router.post('/ruan', '#controllers/ruans_controller.postar')
 
 // Apenas por enquanto
-router.get('/alert_cantegory', '#controllers/alert_categories_controller.getAll')
-router.post('/alert_cantegory', '#controllers/alert_categories_controller.create')
+router.get('/alert_category', '#controllers/alert_categories_controller.getAll')
+router.post('/alert_category', '#controllers/alert_categories_controller.create')
 
 router.get('/alerts', '#controllers/alerts_controller.getAll')
 router.post('/alerts', '#controllers/alerts_controller.create')
