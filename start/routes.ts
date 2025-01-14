@@ -40,6 +40,14 @@ router.get('/docs', async () => {
   // return AutoSwagger.default.rapidoc("/swaggder", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
 })
 
+router
+  .group(() => {
+    router.post('/login', '#controllers/auth_controller.login')
+    router.post('/signup', '#controllers/auth_controller.register')
+  })
+  .prefix('/auth')
+
+
 router.get('/ruan', '#controllers/ruans_controller.hello')
 router.post('/ruan', '#controllers/ruans_controller.postar')
 
