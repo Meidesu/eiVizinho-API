@@ -9,9 +9,10 @@ export const LoginValidator = vine.compile(
 
 export const RegisterValidator = vine.compile(
   vine.object({
-    name: vine.string().minLength(2).maxLength(100),
-    username: vine.string().minLength(3).maxLength(15),
-    password: vine.string().minLength(8).maxLength(32),
-    confirm_password: vine.string().minLength(8).maxLength(32),
+    fullName: vine.string().minLength(2).maxLength(100),
+    email : vine.string().email(),
+    cpf:vine.string().minLength(11).maxLength(14).regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/),
+    password: vine.string().minLength(8).maxLength(32).confirmed({confirmationField: "passwordConfirmation"}),
+    //You should add passwordConfirmation on body!
   })
 )
