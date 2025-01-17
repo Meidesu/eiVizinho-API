@@ -16,11 +16,11 @@ router.on('/').redirect('/docs')
 
 router
   .group(() => {
-    router.get('/hello', async () => {
-      return {
-        hello: 'world',
-      }
-    })
+    router.get('/alerts', '#controllers/alerts_controller.getAll')
+    router.post('/alerts', '#controllers/alerts_controller.create')
+    router.get('/alerts/:id', '#controllers/alerts_controller.getById')
+    router.put('/alerts/:id', '#controllers/alerts_controller.update')
+    router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
   })
   .use(
     middleware.auth({
@@ -54,9 +54,3 @@ router.post('/ruan', '#controllers/ruans_controller.postar')
 // Apenas por enquanto
 router.get('/alert_cantegory', '#controllers/alert_categories_controller.getAll')
 router.post('/alert_cantegory', '#controllers/alert_categories_controller.create')
-
-router.get('/alerts', '#controllers/alerts_controller.getAll')
-router.post('/alerts', '#controllers/alerts_controller.create')
-router.get('/alerts/:id', '#controllers/alerts_controller.getById')
-router.put('/alerts/:id', '#controllers/alerts_controller.update')
-router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
