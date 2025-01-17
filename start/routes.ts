@@ -16,11 +16,11 @@ router.on('/').redirect('/docs')
 
 router
   .group(() => {
-    router.get('/hello', async () => {
-      return {
-        hello: 'world',
-      }
-    })
+    router.get('/alerts', '#controllers/alerts_controller.getAll')
+    router.post('/alerts', '#controllers/alerts_controller.create')
+    router.get('/alerts/:id', '#controllers/alerts_controller.getById')
+    router.put('/alerts/:id', '#controllers/alerts_controller.update')
+    router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
   })
   .use(
     middleware.auth({
@@ -40,15 +40,17 @@ router.get('/docs', async () => {
   // return AutoSwagger.default.rapidoc("/swaggder", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
 })
 
+router
+  .group(() => {
+    router.post('/login', '#controllers/auth_controller.login')
+    router.post('/signup', '#controllers/auth_controller.register')
+  })
+  .prefix('/auth')
+
+
 router.get('/ruan', '#controllers/ruans_controller.hello')
 router.post('/ruan', '#controllers/ruans_controller.postar')
 
 // Apenas por enquanto
 router.get('/alert_cantegory', '#controllers/alert_categories_controller.getAll')
 router.post('/alert_cantegory', '#controllers/alert_categories_controller.create')
-
-router.get('/alerts', '#controllers/alerts_controller.getAll')
-router.post('/alerts', '#controllers/alerts_controller.create')
-router.get('/alerts/:id', '#controllers/alerts_controller.getById')
-router.put('/alerts/:id', '#controllers/alerts_controller.update')
-router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
