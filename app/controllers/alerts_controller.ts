@@ -13,10 +13,16 @@ import { MultipartFile } from '@adonisjs/core/bodyparser'
 import fs from 'fs/promises'
 import { Exception } from '@adonisjs/core/exceptions'
 import env from '#start/env'
+import FileSaverProvider from '../providers/filesaver_provider.js'
+import { ValidFileExtensions } from '../lib/files_config.js'
+import { strToCoordinates } from '../utils/parse.js'
 
 @inject()
 export default class AlertsController {
-  constructor(private geocodingProvider: GeocodingProvider) {}
+  constructor(
+    private geocodingProvider: GeocodingProvider,
+    private filesaverProvider: FileSaverProvider
+  ) {}
 
   /**
    * @create
@@ -24,51 +30,44 @@ export default class AlertsController {
    * @responseBody 200 - <AlertResponseValidator>
    */
   async create({ request, response }: HttpContext) {
-    // const payload = await request.validateUsing(CreateAlertValidator)
+    const payload = await request.validateUsing(CreateAlertValidator)
 
-    // for (const id of payload.categoriesId) {
-    //   try {
-    //     await AlertCategory.findOrFail(id)
-    //   } catch (err: any) {
-    //     return response
-    //       .status(400)
-    //       .send({ error: `Categoria de alerta com id ${id} é inválida ou não existe` })
-    //   }
-    // }
+    const alert = await Alert.create({ name: payload.name })
 
-    // const alert = await Alert.create({ name: payload.name })
+    await alert.related('categories').attach(payload.categoriesId)
+    await alert.load('categories')
 
-    // await alert.related('categories').attach(payload.categoriesId)
-    // await alert.load('categories')
+    await alert.related('location').create({ description: `descrição do ${payload.name}` })
+    await alert.load('location')
 
-    // await alert.related('location').create({ description: `descrição do ${payload.name}` })
-    // await alert.load('location')
-
-    // await alert.location.related('coord').create(payload.location)
-    // await alert.location.load('coord')
-
-    // console.log(alert)
-
-    const media: MultipartFile[] = request.files('media', {
-      extnames: ['jpg', 'png', 'jpeg'],
-    })
-
-    for (const file of media) {
-      if (!file.isValid) {
-        throw new Exception(`File ${file.clientName} uploaded wasn't on valid format! Valid extensions are  ['jpg', 'png', 'jpeg','mp4','mkv']`,{code: "400"})
-      }
+    if (typeof payload.location === 'string') {
+      payload.location = strToCoordinates(payload.location)!
     }
 
-    const uploadInfo = await uploadMedia(media);
+    await alert.location.related('coord').create(payload.location)
+    await alert.location.load('coord')
 
-    // const validated = await AlertResponseValidator.validate({
-    //   ...alert.toJSON(),
-    //   createdAt: alert.createdAt.toISODate(),
-    //   updatedAt: alert.updatedAt.toISODate(),
-    // })
+    const media: MultipartFile[] | null = request.files('media', {
+      extnames: ValidFileExtensions.names,
+    })
 
-    // return response.status(201).send(validated)
-    return response.status(201).send(uploadInfo)
+    const jsonALert = alert.toJSON()
+
+    if (Array.isArray(media) && media.length > 0) {
+      const savedMedia = await this.filesaverProvider.saveFiles(media)
+      await alert.related('media').createMany(savedMedia)
+      await alert.load('media')
+
+      jsonALert.media = await this.filesaverProvider.getFilesFullUrl(savedMedia)
+    }
+
+    const validated = await AlertResponseValidator.validate({
+      ...jsonALert,
+      createdAt: alert.createdAt.toISODate(),
+      updatedAt: alert.updatedAt.toISODate(),
+    })
+
+    return response.status(201).send(validated)
   }
 
   /**
@@ -202,103 +201,103 @@ export default class AlertsController {
 
 async function uploadMedia(media: MultipartFile[]): Promise<UploadedImage[]> {
   if (!media || media.length === 0) {
-    return [];
+    return []
   }
-  
-  const uploadedImages = [] 
+
+  const uploadedImages = []
 
   for (const file of media) {
-
     // try {
-      // Movendo o arquivo temporariamente para a pasta TMP (opcional para processar)
-      const tempFilePath = file.tmpPath;
-      if (!tempFilePath) {//TODO: ver como fica esse erro
-        throw new Error(`O caminho temporário do arquivo não está disponível para o arquivo ${file.clientName}`)
-      }
-      // Lendo o arquivo como base64
-      const fileBuffer = await fs.readFile(tempFilePath)
-      const base64Image = fileBuffer.toString('base64')
+    // Movendo o arquivo temporariamente para a pasta TMP (opcional para processar)
+    const tempFilePath = file.tmpPath
+    if (!tempFilePath) {
+      //TODO: ver como fica esse erro
+      throw new Error(
+        `O caminho temporário do arquivo não está disponível para o arquivo ${file.clientName}`
+      )
+    }
+    // Lendo o arquivo como base64
+    const fileBuffer = await fs.readFile(tempFilePath)
+    const base64Image = fileBuffer.toString('base64')
 
-      // Fazendo upload para ImgBB
-      const apiKey = env.get("IMGBB_API_KEY"); // Substitua pela sua chave da API do ImgBB
-      
-      const responseImgBB = await fetch(
-        `https://api.imgbb.com/1/upload?key=${apiKey}`,{
-          body: (() => {
-            const formData = new FormData();
-            formData.append("image", base64Image);
-            return formData;
-          })(),
-        method: "POST"},)
+    // Fazendo upload para ImgBB
+    const apiKey = env.get('IMGBB_API_KEY') // Substitua pela sua chave da API do ImgBB
 
-      const body = (await responseImgBB.json()) as ApiResponse;
+    const responseImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      body: (() => {
+        const formData = new FormData()
+        formData.append('image', base64Image)
+        return formData
+      })(),
+      method: 'POST',
+    })
 
-      if(responseImgBB.ok){
-        uploadedImages.push({
-          fileName: file.clientName,
-          imgbbUrl: body.data.url, // URL gerada pelo ImgBB
-          deleteUrl: body.data.delete_url, // URL para deletar a imagem no futuro
-        })
-      }
-else {
-  throw new Exception(responseImgBB.statusText)
-}
-      // Adiciona o URL retornado à lista de imagens enviadas
+    const body = (await responseImgBB.json()) as ApiResponse
 
-      // Remove o arquivo temporário após o upload
-      await fs.unlink(tempFilePath)
+    if (responseImgBB.ok) {
+      uploadedImages.push({
+        fileName: file.clientName,
+        imgbbUrl: body.data.url, // URL gerada pelo ImgBB
+        deleteUrl: body.data.delete_url, // URL para deletar a imagem no futuro
+      })
+    } else {
+      throw new Exception(responseImgBB.statusText)
+    }
+    // Adiciona o URL retornado à lista de imagens enviadas
+
+    // Remove o arquivo temporário após o upload
+    await fs.unlink(tempFilePath)
     // } catch (error) {
     //   throw new UploadImageException(file.clientName)
     // }
-  } 
+  }
 
-  return uploadedImages;
+  return uploadedImages
 }
 
-
 interface ImageData {
-  id: string;
-  title: string;
-  url_viewer: string;
-  url: string;
-  display_url: string;
-  width: string;
-  height: string;
-  size: string;
-  time: string;
-  expiration: string;
+  id: string
+  title: string
+  url_viewer: string
+  url: string
+  display_url: string
+  width: string
+  height: string
+  size: string
+  time: string
+  expiration: string
   image: {
-    filename: string;
-    name: string;
-    mime: string;
-    extension: string;
-    url: string;
-  };
+    filename: string
+    name: string
+    mime: string
+    extension: string
+    url: string
+  }
   thumb: {
-    filename: string;
-    name: string;
-    mime: string;
-    extension: string;
-    url: string;
-  };
+    filename: string
+    name: string
+    mime: string
+    extension: string
+    url: string
+  }
   medium: {
-    filename: string;
-    name: string;
-    mime: string;
-    extension: string;
-    url: string;
-  };
-  delete_url: string;
+    filename: string
+    name: string
+    mime: string
+    extension: string
+    url: string
+  }
+  delete_url: string
 }
 
 interface ApiResponse {
-  data: ImageData;
-  success: boolean;
-  status: number;
+  data: ImageData
+  success: boolean
+  status: number
 }
 
 interface UploadedImage {
-  fileName: string,
-  imgbbUrl: string, // URL gerada pelo ImgBB
-  deleteUrl: string, // URL para deletar a imagem no futuro
+  fileName: string
+  imgbbUrl: string // URL gerada pelo ImgBB
+  deleteUrl: string // URL para deletar a imagem no futuro
 }

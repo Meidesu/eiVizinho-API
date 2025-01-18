@@ -8,6 +8,7 @@ import {
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
 
+
 export default class AuthController {
   /**
    * @login
@@ -28,6 +29,7 @@ export default class AuthController {
     const tokenExpiration =
       env.get('TOKEN_EXPIRATION_IN_STRING') ?? env.get('TOKEN_EXPIRATION_IN_SECONDS') ?? '1y'
 
+    //TODO: Verificar se o último token registrado ligado àquele usuário ainda é válido e se sim retorná-lo
     const token = await User.accessTokens.create(user, undefined, {
       expiresIn: tokenExpiration ?? '',
     })

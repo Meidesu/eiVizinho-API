@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasOne, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, hasOne, manyToMany } from '@adonisjs/lucid/orm'
 import AlertCategory from './alert_category.js'
-import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
 import AlertLocation from './alert_location.js'
+import File from './file.js'
 
 export default class Alert extends BaseModel {
   @column({ isPrimary: true })
@@ -26,4 +27,10 @@ export default class Alert extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @hasMany(() => File, {
+    foreignKey: 'alert_id',
+    
+  })
+  declare media: HasMany<typeof File>
 }

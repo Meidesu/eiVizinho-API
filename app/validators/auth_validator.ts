@@ -1,13 +1,14 @@
 import vine from '@vinejs/vine'
-import { cpfRule } from '../utils/cpf_rule.js'
+import { cpfRule } from './cpf_rule.js'
 
 const credentialIdentifier = vine.group([
   vine.group.if((data) => 'email' in data, {
-    email: vine.string().email(),
+    email: vine.string().trim().email(),
   }),
   vine.group.if((data) => 'cpf' in data, {
     cpf: vine
       .string()
+      .trim()
       .use(cpfRule())
       .transform((value) => value.replace(/\D/g, '')),
   }),
@@ -43,10 +44,11 @@ export const LoginResponseValidator = vine.compile(
 
 export const RegisterRequestValidator = vine.compile(
   vine.object({
-    fullName: vine.string().minLength(2).maxLength(100),
-    email: vine.string().email(),
+    fullName: vine.string().trim().minLength(2).maxLength(100),
+    email: vine.string().trim().email(),
     cpf: vine
       .string()
+      .trim()
       .use(cpfRule())
       .transform((value) => value.replace(/\D/g, '')),
     password: vine

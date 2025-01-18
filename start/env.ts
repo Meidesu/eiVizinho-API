@@ -14,10 +14,8 @@ import { Env } from '@adonisjs/core/env'
 export default await Env.create(new URL('../', import.meta.url), {
   NODE_ENV: Env.schema.enum(['development', 'production', 'test'] as const),
   PORT: Env.schema.number.optional(),
-  APP_KEY: Env.schema.string(),
   HOST: Env.schema.string.optional({ format: 'host' }),
   LOG_LEVEL: Env.schema.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']),
-
   /*
   |----------------------------------------------------------
   | Variables for configuring database connection
@@ -28,6 +26,22 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
-  TOKEN_EXPIRATION_IN_SECONDS : Env.schema.number.optional(),
-  TOKEN_EXPIRATION_IN_STRING : Env.schema.string.optional()
+  /*
+ |----------------------------------------------------------
+ | Variables for configuring app
+ |----------------------------------------------------------
+ */
+  TOKEN_EXPIRATION_IN_SECONDS: Env.schema.number.optional(),
+  TOKEN_EXPIRATION_IN_STRING: Env.schema.string.optional(),
+  APP_KEY: Env.schema.string(),
+  IMGBB_API_KEY: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the drive package
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum(['gcs', 'fs'] as const),
+  GCS_KEY_FILENAME: Env.schema.string(),
+  GCS_BUCKET: Env.schema.string(),
 })
