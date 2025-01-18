@@ -9,6 +9,10 @@ import {
 import type { HttpContext } from '@adonisjs/core/http'
 import GeocodingProvider from '../providers/geocoding_provider.js'
 import { inject } from '@adonisjs/core'
+import { MultipartFile } from '@adonisjs/core/bodyparser'
+import fs from 'fs/promises'
+import { Exception } from '@adonisjs/core/exceptions'
+import env from '#start/env'
 
 @inject()
 export default class AlertsController {
@@ -20,38 +24,51 @@ export default class AlertsController {
    * @responseBody 200 - <AlertResponseValidator>
    */
   async create({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(CreateAlertValidator)
+    // const payload = await request.validateUsing(CreateAlertValidator)
 
-    for (const id of payload.categoriesId) {
-      try {
-        await AlertCategory.findOrFail(id)
-      } catch (err: any) {
-        return response
-          .status(400)
-          .send({ error: `Categoria de alerta com id ${id} é inválida ou não existe` })
+    // for (const id of payload.categoriesId) {
+    //   try {
+    //     await AlertCategory.findOrFail(id)
+    //   } catch (err: any) {
+    //     return response
+    //       .status(400)
+    //       .send({ error: `Categoria de alerta com id ${id} é inválida ou não existe` })
+    //   }
+    // }
+
+    // const alert = await Alert.create({ name: payload.name })
+
+    // await alert.related('categories').attach(payload.categoriesId)
+    // await alert.load('categories')
+
+    // await alert.related('location').create({ description: `descrição do ${payload.name}` })
+    // await alert.load('location')
+
+    // await alert.location.related('coord').create(payload.location)
+    // await alert.location.load('coord')
+
+    // console.log(alert)
+
+    const media: MultipartFile[] = request.files('media', {
+      extnames: ['jpg', 'png', 'jpeg'],
+    })
+
+    for (const file of media) {
+      if (!file.isValid) {
+        throw new Exception(`File ${file.clientName} uploaded wasn't on valid format! Valid extensions are  ['jpg', 'png', 'jpeg','mp4','mkv']`,{code: "400"})
       }
     }
 
-    const alert = await Alert.create({ name: payload.name })
+    const uploadInfo = await uploadMedia(media);
 
-    await alert.related('categories').attach(payload.categoriesId)
-    await alert.load('categories')
+    // const validated = await AlertResponseValidator.validate({
+    //   ...alert.toJSON(),
+    //   createdAt: alert.createdAt.toISODate(),
+    //   updatedAt: alert.updatedAt.toISODate(),
+    // })
 
-    await alert.related('location').create({ description: `descrição do ${payload.name}` })
-    await alert.load('location')
-
-    await alert.location.related('coord').create(payload.location)
-    await alert.location.load('coord')
-
-    console.log(alert)
-
-    const validated = await AlertResponseValidator.validate({
-      ...alert.toJSON(),
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
-    })
-
-    return response.status(201).send(validated)
+    // return response.status(201).send(validated)
+    return response.status(201).send(uploadInfo)
   }
 
   /**
@@ -181,4 +198,107 @@ export default class AlertsController {
 
     return response.status(200).json(alert)
   }
+}
+
+async function uploadMedia(media: MultipartFile[]): Promise<UploadedImage[]> {
+  if (!media || media.length === 0) {
+    return [];
+  }
+  
+  const uploadedImages = [] 
+
+  for (const file of media) {
+
+    // try {
+      // Movendo o arquivo temporariamente para a pasta TMP (opcional para processar)
+      const tempFilePath = file.tmpPath;
+      if (!tempFilePath) {//TODO: ver como fica esse erro
+        throw new Error(`O caminho temporário do arquivo não está disponível para o arquivo ${file.clientName}`)
+      }
+      // Lendo o arquivo como base64
+      const fileBuffer = await fs.readFile(tempFilePath)
+      const base64Image = fileBuffer.toString('base64')
+
+      // Fazendo upload para ImgBB
+      const apiKey = env.get("IMGBB_API_KEY"); // Substitua pela sua chave da API do ImgBB
+      
+      const responseImgBB = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,{
+          body: (() => {
+            const formData = new FormData();
+            formData.append("image", base64Image);
+            return formData;
+          })(),
+        method: "POST"},)
+
+      const body = (await responseImgBB.json()) as ApiResponse;
+
+      if(responseImgBB.ok){
+        uploadedImages.push({
+          fileName: file.clientName,
+          imgbbUrl: body.data.url, // URL gerada pelo ImgBB
+          deleteUrl: body.data.delete_url, // URL para deletar a imagem no futuro
+        })
+      }
+else {
+  throw new Exception(responseImgBB.statusText)
+}
+      // Adiciona o URL retornado à lista de imagens enviadas
+
+      // Remove o arquivo temporário após o upload
+      await fs.unlink(tempFilePath)
+    // } catch (error) {
+    //   throw new UploadImageException(file.clientName)
+    // }
+  } 
+
+  return uploadedImages;
+}
+
+
+interface ImageData {
+  id: string;
+  title: string;
+  url_viewer: string;
+  url: string;
+  display_url: string;
+  width: string;
+  height: string;
+  size: string;
+  time: string;
+  expiration: string;
+  image: {
+    filename: string;
+    name: string;
+    mime: string;
+    extension: string;
+    url: string;
+  };
+  thumb: {
+    filename: string;
+    name: string;
+    mime: string;
+    extension: string;
+    url: string;
+  };
+  medium: {
+    filename: string;
+    name: string;
+    mime: string;
+    extension: string;
+    url: string;
+  };
+  delete_url: string;
+}
+
+interface ApiResponse {
+  data: ImageData;
+  success: boolean;
+  status: number;
+}
+
+interface UploadedImage {
+  fileName: string,
+  imgbbUrl: string, // URL gerada pelo ImgBB
+  deleteUrl: string, // URL para deletar a imagem no futuro
 }
