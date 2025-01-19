@@ -1,5 +1,5 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { type FileType } from '../lib/files_config.js'
+import { type FileType } from '../config/files_config.js'
 import { DateTime } from 'luxon'
 
 export default class File extends BaseModel {

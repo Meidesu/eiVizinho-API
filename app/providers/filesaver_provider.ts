@@ -1,5 +1,5 @@
 import { MultipartFile } from '@adonisjs/core/types/bodyparser'
-import { FileType, ValidFileExtensions } from '../lib/files_config.js'
+import { FileType, ValidFileExtensions } from '../config/files_config.js'
 import { cuid } from '@adonisjs/core/helpers'
 import { Exception } from '@adonisjs/core/exceptions'
 import drive from '@adonisjs/drive/services/main'
@@ -26,8 +26,6 @@ export default class FileSaverProvider {
     const savedFiles: SavedFile[] = []
     const customDirectory = options?.customDirectory ? options?.customDirectory + '/' : ''
 
-    console.log(files)
-
     for (const file of files) {
       const type = ValidFileExtensions.getFileType(file.extname ?? '')
 
@@ -39,7 +37,6 @@ export default class FileSaverProvider {
       }
 
       const key = `uploads/${customDirectory}${type}s/${cuid()}.${file.extname}`
-      console.log('ok')
       await file.moveToDisk(key)
 
       savedFiles.push({
@@ -50,21 +47,30 @@ export default class FileSaverProvider {
     return savedFiles
   }
 
-  async getFilesFullUrl(files: SavedFile[]) {
+  async getFilesFullUrl(files: SavedFile[], options?: { protocol?: string; hostname?: string }) {
     if (!Array.isArray(files)) {
       throw new Exception(
         `FileSaverProvider:getFilesFullUrl received a non array to param files!`,
         { code: '500' }
       )
     }
-    
+
     for (const file of files) {
       const driveDisk = env.get('DRIVE_DISK')
-      switch(driveDisk){
+
+      const port = env.get('PORT')
+
+      let host = options?.hostname
+      if (host === 'localhost' && port) {
+        host += `:${port}`
+      }
+
+      switch (driveDisk) {
         case 'fs':
-          file.key = `http://localhost:3333/uploads/${file.key}`
+          file.key = `${options?.protocol}://${host}/media/${file.key}`
           break
         case 'gcs':
+          //On this for-loop, just the line over is needed if you don't pretend to use fs as disk driver
           file.key = await drive.use().getUrl(file.key)
           break
       }

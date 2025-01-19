@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 import { AlertCategoryResponseValidator } from './alert_category_validator.js'
-import { type FileType } from '../lib/files_config.js'
+import { type FileType } from '../config/files_config.js'
 
 export const CreateAlertValidator = vine.compile(
   vine.object({
@@ -29,7 +29,7 @@ export const AlertResponseValidator = vine.compile(
         longitude: vine.number(),
       }),
     }),
-    media: vine.array(vine.object({type: vine.enum(["audio", "image", "audio"] as FileType[]), key: vine.string()})),
+    media: vine.array(vine.object({type: vine.enum(["audio", "image", "video"] as FileType[]), key: vine.string()})),
     createdAt: vine.date({ formats: {} }),
     updatedAt: vine.date({ formats: {} }),
   })

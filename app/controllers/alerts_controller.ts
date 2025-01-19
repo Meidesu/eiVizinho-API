@@ -14,7 +14,7 @@ import fs from 'fs/promises'
 import { Exception } from '@adonisjs/core/exceptions'
 import env from '#start/env'
 import FileSaverProvider from '../providers/filesaver_provider.js'
-import { ValidFileExtensions } from '../lib/files_config.js'
+import { ValidFileExtensions } from '../config/files_config.js'
 import { strToCoordinates } from '../utils/parse.js'
 
 @inject()
@@ -49,6 +49,7 @@ export default class AlertsController {
 
     const media: MultipartFile[] | null = request.files('media', {
       extnames: ValidFileExtensions.names,
+      
     })
 
     const jsonALert = alert.toJSON()
@@ -58,7 +59,10 @@ export default class AlertsController {
       await alert.related('media').createMany(savedMedia)
       await alert.load('media')
 
-      jsonALert.media = await this.filesaverProvider.getFilesFullUrl(savedMedia)
+      jsonALert.media = await this.filesaverProvider.getFilesFullUrl(savedMedia, {
+        protocol: request.protocol(),
+        hostname: request.hostname() ?? '',
+      })
     }
 
     const validated = await AlertResponseValidator.validate({
