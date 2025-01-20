@@ -1,5 +1,5 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { type FileType } from '../config/files_config.js'
+import { type MediaFileType } from '../config/files_config.js'
 import { DateTime } from 'luxon'
 
 export default class File extends BaseModel {
@@ -10,7 +10,7 @@ export default class File extends BaseModel {
   declare key: string
 
   @column()
-  declare type: FileType
+  declare type: MediaFileType
 
   @column()
   declare alert_id: number
