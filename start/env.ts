@@ -34,8 +34,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   TOKEN_EXPIRATION_IN_SECONDS: Env.schema.number.optional(),
   TOKEN_EXPIRATION_IN_STRING: Env.schema.string.optional(),
   APP_KEY: Env.schema.string(),
-  IMGBB_API_KEY: Env.schema.string(),
-
   /*
   |----------------------------------------------------------
   | Variables for configuring the drive package

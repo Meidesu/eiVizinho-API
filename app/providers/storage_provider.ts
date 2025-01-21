@@ -15,7 +15,7 @@ type Options = {
   customDirectory?: string
 }
 
-export default class FileSaverProvider {
+export default class StorageProvider {
   async saveFiles(files: MultipartFile[], options?: Options): Promise<SavedFile[]> {
     if (!Array.isArray(files)) {
       throw new Exception(`FileSaverProvider:saveFiles received a non array to param files!`, {
@@ -90,7 +90,7 @@ async function uploadMedia(media: MultipartFile[]): Promise<UploadedImage[]> {
     const base64Image = fileBuffer.toString('base64')
 
     // Fazendo upload para ImgBB
-    const apiKey = env.get('IMGBB_API_KEY') // Substitua pela sua chave da API do ImgBB
+    const apiKey = '' // env.get('IMGBB_API_KEY') -> Substitua pela sua chave da API do ImgBB
 
     const responseImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
       body: (() => {

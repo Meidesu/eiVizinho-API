@@ -1,11 +1,11 @@
 import { ruanValidator } from '#validators/ruan'
 import type { HttpContext } from '@adonisjs/core/http'
-import FileSaverProvider from '../providers/filesaver_provider.js'
+import StorageProvider from '../providers/storage_provider.js'
 import { inject } from '@adonisjs/core'
 
 @inject()
 export default class RuansController {
-  constructor(private storageProvider: FileSaverProvider) {}
+  constructor(private storageProvider: StorageProvider) {}
   hello({ response }: HttpContext) {
     response.send({ msg: 'Olá ruan' })
   }

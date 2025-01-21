@@ -9,7 +9,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import GeocodingProvider from '../providers/geocoding_provider.js'
 import { inject } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
-import StorageProvider from '../providers/filesaver_provider.js'
+import StorageProvider from '../providers/storage_provider.js'
 import { ValidFileExtensions } from '../config/files_config.js'
 import { strToCoordinates } from '../utils/parse.js'
 import drive from '@adonisjs/drive/services/main'
@@ -63,6 +63,8 @@ export default class AlertsController {
           hostname: request.hostname() ?? '',
         })
       }
+    } else {
+      jsonAlert.media = []
     }
 
     const validated = await AlertResponseValidator.validate({
@@ -176,7 +178,10 @@ export default class AlertsController {
       await alert.related('categories').sync(categoriesId)
     }
 
-    await alert.merge({ name }).save()
+    if(name){
+      await alert.merge({ name }).save()
+    }
+
     await alert.load('categories')
     await alert.load('location', (query) => {
       query.preload('coord')
@@ -202,11 +207,7 @@ export default class AlertsController {
         })
       }
     }
-    console.log({
-      ...jsonAlert,
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
-    })
+    
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
       createdAt: alert.createdAt.toISODate(),
