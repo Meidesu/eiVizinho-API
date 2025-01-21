@@ -15,6 +15,7 @@ import { strToCoordinates } from '../utils/parse.js'
 import drive from '@adonisjs/drive/services/main'
 import { File as FileInterface } from './../interfaces/file_dto.js'
 import env from '#start/env'
+import { DateTime } from 'luxon'
 
 @inject()
 export default class AlertsController {
@@ -31,7 +32,7 @@ export default class AlertsController {
   async create({ request, response }: HttpContext) {
     const payload = await request.validateUsing(CreateAlertValidator)
 
-    const alert = await Alert.create({ name: payload.name })
+    const alert = await Alert.create({ name: payload.name, approximateDtHr: DateTime.fromISO(payload.approximateDtHr) })
 
     await alert.related('categories').attach(payload.categoriesId)
     await alert.load('categories')
@@ -73,8 +74,8 @@ export default class AlertsController {
 
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
+      // createdAt: alert.createdAt.toISODate(),
+      // updatedAt: alert.updatedAt.toISODate(),
     })
 
     return response.status(201).send(validated)
@@ -108,8 +109,8 @@ export default class AlertsController {
 
         return await AlertResponseValidator.validate({
           ...jsonAlert,
-          createdAt: alert.createdAt.toISODate(),
-          updatedAt: alert.updatedAt.toISODate(),
+          // createdAt: alert.createdAt.toISODate(),
+          // updatedAt: alert.updatedAt.toISODate(),
         })
       })
     )
@@ -147,8 +148,8 @@ export default class AlertsController {
 
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
+      // createdAt: alert.createdAt.toISODate(),
+      // updatedAt: alert.updatedAt.toISODate(),
     })
 
     return response.status(200).json(validated)
@@ -215,8 +216,8 @@ export default class AlertsController {
     
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
-      createdAt: alert.createdAt.toISODate(),
-      updatedAt: alert.updatedAt.toISODate(),
+      // createdAt: alert.createdAt.toISODate(),
+      // updatedAt: alert.updatedAt.toISODate(),
     })
 
     return response.status(200).json(validated)
