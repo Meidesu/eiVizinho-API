@@ -16,6 +16,13 @@ router.on('/').redirect('/docs')
 
 router
   .group(() => {
+    router.post('/login', '#controllers/auth_controller.login')
+    router.post('/signup', '#controllers/auth_controller.register')
+  })
+  .prefix('/auth')
+
+router
+  .group(() => {
     router.get('/alerts', '#controllers/alerts_controller.getAll')
     router.post('/alerts', '#controllers/alerts_controller.create')
     router.get('/alerts/:id', '#controllers/alerts_controller.getById')
@@ -31,6 +38,9 @@ router
     })
   )
 
+router.get('/ruan', '#controllers/ruans_controller.hello')
+router.post('/ruan', '#controllers/ruans_controller.postar')
+
 // returns swagger in YAML
 router.get('/swagger', async () => {
   return AutoSwagger.default.docs(router.toJSON(), swagger)
@@ -42,16 +52,3 @@ router.get('/docs', async () => {
   // return AutoSwagger.default.scalar("/swagger"); to use Scalar instead
   // return AutoSwagger.default.rapidoc("/swaggder", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
 })
-
-router
-  .group(() => {
-    router.post('/login', '#controllers/auth_controller.login')
-    router.post('/signup', '#controllers/auth_controller.register')
-  })
-  .prefix('/auth')
-
-
-router.get('/ruan', '#controllers/ruans_controller.hello')
-router.post('/ruan', '#controllers/ruans_controller.postar')
-
-router.post('/test', '#controllers/ruans_controller.test')

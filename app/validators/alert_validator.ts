@@ -39,8 +39,8 @@ export const AlertResponseValidator = vine.compile(
         updatedAt: vine.string(),
       })
     ),
-    createdAt: vine.date({ formats: {} }),
-    updatedAt: vine.date({ formats: {} }),
+    createdAt: vine.date({ formats: { utc: false }  }),
+    updatedAt: vine.date({ formats: { utc: false }  }),
   })
 )
 

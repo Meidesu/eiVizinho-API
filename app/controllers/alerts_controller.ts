@@ -34,12 +34,14 @@ export default class AlertsController {
 
     await alert.related('categories').attach(payload.categoriesId)
     await alert.load('categories')
-    await alert.related('location').create({ description: `descrição do ${payload.name}` })
-    await alert.load('location')
 
     if (typeof payload.location === 'string') {
       payload.location = strToCoordinates(payload.location)!
     }
+
+    const locationDescription = await this.geocodingProvider.reverseGeocode(payload.location)
+    await alert.related('location').create({ description: locationDescription })
+    await alert.load('location')
 
     await alert.location.related('coord').create(payload.location)
     await alert.location.load('coord')
@@ -66,6 +68,8 @@ export default class AlertsController {
     } else {
       jsonAlert.media = []
     }
+
+    console.log(jsonAlert)
 
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
@@ -140,6 +144,8 @@ export default class AlertsController {
         })
       }
     }
+
+    console.log(jsonAlert)
 
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,

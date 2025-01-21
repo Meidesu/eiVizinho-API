@@ -42,4 +42,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   DRIVE_DISK: Env.schema.enum(['gcs', 'fs'] as const),
   GCS_KEY_FILENAME: Env.schema.string(),
   GCS_BUCKET: Env.schema.string(),
+  /*
+  |----------------------------------------------------------
+  | Variables for external APIs
+  |----------------------------------------------------------
+  */
+  GOOGLE_MAPS_API_KEY: Env.schema.string(),
 })
