@@ -27,7 +27,7 @@ export default class AuthController {
     }
 
     const tokenExpiration =
-      env.get('TOKEN_EXPIRATION_IN_STRING') ?? env.get('TOKEN_EXPIRATION_IN_SECONDS') ?? '1y'
+      env.get('TOKEN_EXPIRATION_IN_STRING') ?? env.get('TOKEN_EXPIRATION_IN_SECONDS')
 
     //TODO: Verificar se o último token registrado ligado àquele usuário ainda é válido e se sim retorná-lo
     const token = await User.accessTokens.create(user, undefined, {

@@ -22,6 +22,9 @@ export default class Alert extends BaseModel {
   })
   declare categories: ManyToMany<typeof AlertCategory>
 
+  @column.dateTime()
+  declare approximateDtHr: DateTime
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
