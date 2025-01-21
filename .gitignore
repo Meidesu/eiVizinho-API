@@ -8,6 +8,7 @@ tmp
 .env.local
 .env.production.local
 .env.development.local
+gcs_key.json
 
 # Frontend assets compiled code
 public/assets
@@ -23,3 +24,6 @@ yarn-error.log
 
 # Platform specific
 .DS_Store
+
+# Uploads using fs disk driver
+storage

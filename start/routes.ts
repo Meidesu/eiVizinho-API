@@ -21,6 +21,9 @@ router
     router.get('/alerts/:id', '#controllers/alerts_controller.getById')
     router.put('/alerts/:id', '#controllers/alerts_controller.update')
     router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
+
+    router.get('/alert_category', '#controllers/alert_categories_controller.getAll')
+    router.post('/alert_category', '#controllers/alert_categories_controller.create')
   })
   .use(
     middleware.auth({
@@ -51,6 +54,4 @@ router
 router.get('/ruan', '#controllers/ruans_controller.hello')
 router.post('/ruan', '#controllers/ruans_controller.postar')
 
-// Apenas por enquanto
-router.get('/alert_cantegory', '#controllers/alert_categories_controller.getAll')
-router.post('/alert_cantegory', '#controllers/alert_categories_controller.create')
+router.post('/test', '#controllers/ruans_controller.test')
