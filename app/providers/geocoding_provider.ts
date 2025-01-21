@@ -1,3 +1,4 @@
+import env from '#start/env'
 import { Exception } from '@adonisjs/core/exceptions'
 import {
   Client,
@@ -21,7 +22,7 @@ export default class GeocodingProvider {
   async reverseGeocode({ latitude, longitude }: Coordinates): Promise<string> {
     const request: ReverseGeocodeRequest = {
       params: {
-        key: process.env.GOOGLE_MAPS_API_KEY || '',
+        key: env.get("GOOGLE_MAPS_API_KEY"),
         latlng: [latitude, longitude],
         language: Language.pt_BR,
       },
@@ -31,10 +32,12 @@ export default class GeocodingProvider {
       .reverseGeocode(request)
       .then((response) => {
         if (response.data.status !== Status.OK) {
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>> DEU MERDA", response.data.status)
           return ''
         }
 
         const { formatted_address: formattedAddress } = response.data.results[0]
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>> DEU BoM", formattedAddress)
 
         return formattedAddress
       })

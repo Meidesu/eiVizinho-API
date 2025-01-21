@@ -16,17 +16,30 @@ router.on('/').redirect('/docs')
 
 router
   .group(() => {
-    router.get('/hello', async () => {
-      return {
-        hello: 'world',
-      }
-    })
+    router.post('/login', '#controllers/auth_controller.login')
+    router.post('/signup', '#controllers/auth_controller.register')
+  })
+  .prefix('/auth')
+
+router
+  .group(() => {
+    router.get('/alerts', '#controllers/alerts_controller.getAll')
+    router.post('/alerts', '#controllers/alerts_controller.create')
+    router.get('/alerts/:id', '#controllers/alerts_controller.getById')
+    router.put('/alerts/:id', '#controllers/alerts_controller.update')
+    router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
+
+    router.get('/alert_category', '#controllers/alert_categories_controller.getAll')
+    router.post('/alert_category', '#controllers/alert_categories_controller.create')
   })
   .use(
     middleware.auth({
       guards: ['api'],
     })
   )
+
+router.get('/ruan', '#controllers/ruans_controller.hello')
+router.post('/ruan', '#controllers/ruans_controller.postar')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -39,16 +52,3 @@ router.get('/docs', async () => {
   // return AutoSwagger.default.scalar("/swagger"); to use Scalar instead
   // return AutoSwagger.default.rapidoc("/swaggder", "view"); to use RapiDoc instead (pass "view" default, or "read" to change the render-style)
 })
-
-router.get('/ruan', '#controllers/ruans_controller.hello')
-router.post('/ruan', '#controllers/ruans_controller.postar')
-
-// Apenas por enquanto
-router.get('/alert_category', '#controllers/alert_categories_controller.getAll')
-router.post('/alert_category', '#controllers/alert_categories_controller.create')
-
-router.get('/alerts', '#controllers/alerts_controller.getAll')
-router.post('/alerts', '#controllers/alerts_controller.create')
-router.get('/alerts/:id', '#controllers/alerts_controller.getById')
-router.put('/alerts/:id', '#controllers/alerts_controller.update')
-router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
