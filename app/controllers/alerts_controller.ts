@@ -14,6 +14,7 @@ import { ValidFileExtensions } from '../config/files_config.js'
 import { strToCoordinates } from '../utils/parse.js'
 import drive from '@adonisjs/drive/services/main'
 import { File as FileInterface } from './../interfaces/file_dto.js'
+import env from '#start/env'
 
 @inject()
 export default class AlertsController {
@@ -48,6 +49,7 @@ export default class AlertsController {
 
     const media: MultipartFile[] | null = request.files('media', {
       extnames: ValidFileExtensions.names,
+      size : env.get("FILE_SIZE_LIMIT_IN_MB")
     })
 
     if (Array.isArray(media) && media.length > 0) {
@@ -68,8 +70,6 @@ export default class AlertsController {
     } else {
       jsonAlert.media = []
     }
-
-    console.log(jsonAlert)
 
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
@@ -145,8 +145,6 @@ export default class AlertsController {
       }
     }
 
-    console.log(jsonAlert)
-
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
       createdAt: alert.createdAt.toISODate(),
@@ -195,6 +193,7 @@ export default class AlertsController {
 
     const reqMedia: MultipartFile[] | null = request.files('media', {
       extnames: ValidFileExtensions.names,
+         size : env.get("FILE_SIZE_LIMIT_IN_MB")
     })
 
     if (Array.isArray(reqMedia) && reqMedia.length > 0) {
