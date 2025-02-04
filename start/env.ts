@@ -34,6 +34,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   TOKEN_EXPIRATION_IN_SECONDS: Env.schema.number.optional(),
   TOKEN_EXPIRATION_IN_STRING: Env.schema.string.optional(),
   APP_KEY: Env.schema.string(),
+  FILE_SIZE_LIMIT_IN_MB: Env.schema.string(),
   /*
   |----------------------------------------------------------
   | Variables for configuring the drive package

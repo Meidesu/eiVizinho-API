@@ -32,12 +32,10 @@ export default class GeocodingProvider {
       .reverseGeocode(request)
       .then((response) => {
         if (response.data.status !== Status.OK) {
-          console.log(">>>>>>>>>>>>>>>>>>>>>>>> DEU MERDA", response.data.status)
           return ''
         }
 
         const { formatted_address: formattedAddress } = response.data.results[0]
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>> DEU BoM", formattedAddress)
 
         return formattedAddress
       })

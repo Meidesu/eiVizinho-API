@@ -21,15 +21,16 @@ router
   })
   .prefix('/auth')
 
+router.get('/alerts', '#controllers/alerts_controller.getAll')
+router.get('/alert_category', '#controllers/alert_categories_controller.getAll')
+
 router
   .group(() => {
-    router.get('/alerts', '#controllers/alerts_controller.getAll')
     router.post('/alerts', '#controllers/alerts_controller.create')
     router.get('/alerts/:id', '#controllers/alerts_controller.getById')
     router.put('/alerts/:id', '#controllers/alerts_controller.update')
     router.delete('/alerts/:id', '#controllers/alerts_controller.delete')
 
-    router.get('/alert_category', '#controllers/alert_categories_controller.getAll')
     router.post('/alert_category', '#controllers/alert_categories_controller.create')
   })
   .use(
