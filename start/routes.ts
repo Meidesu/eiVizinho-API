@@ -10,7 +10,7 @@
 import swagger from '#config/swagger'
 import router from '@adonisjs/core/services/router'
 import AutoSwagger from 'adonis-autoswagger'
-import { middleware } from './kernel.js'
+import { middleware, auth } from './kernel.js'
 
 router.on('/').redirect('/docs')
 
@@ -38,6 +38,9 @@ router
       guards: ['api'],
     })
   )
+
+  //obter os dados do usuário autenticado
+router.get('/user/data', '#controllers/auth_controller.getData').middleware([auth])
 
 router.get('/ruan', '#controllers/ruans_controller.hello')
 router.post('/ruan', '#controllers/ruans_controller.postar')

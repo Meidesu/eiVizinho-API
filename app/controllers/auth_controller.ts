@@ -7,8 +7,7 @@ import {
 } from '#validators/auth_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
-
-
+import { UserValidator } from '#validators/user_validator'
 export default class AuthController {
   /**
    * @login
@@ -58,4 +57,26 @@ export default class AuthController {
 
     return response.created(validated)
   }
+  /**
+   * @getData
+   * @requestBody <UserValidator>.append("id": 1, "fullName": "xxxxx", "email": "", "cpf": "xxxxxxxx", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z")
+   * @responseBody 200 - <Dados do usuário autenticado>
+   */
+  async getData({ auth, response }: HttpContext) {
+    try {
+      const user = await auth.user;
+      if (!user) {
+        console.log("Usuário não autenticado");
+        return response.unauthorized('Usuário não autenticado');
+      }
+    
+      const validated = await UserValidator.validate(user.serialize());
+      return response.ok(validated);
+    } catch (error) {
+      console.log('Erro ao obter dados do usuário:', error);
+      return response.internalServerError('Erro ao obter dados do usuário');
+    
+    }
+  }
 }
+
