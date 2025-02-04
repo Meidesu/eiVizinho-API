@@ -3,5 +3,9 @@
   "compilerOptions": {
     "rootDir": "./",
     "outDir": "./build"
-  }
+  },
+  "paths": {
+      "@ioc:Adonis/*": ["node_modules/@adonisjs/core/build/**/*.js"],
+      "#middleware/*": ["app/Middleware/*"]
+    }
 }
