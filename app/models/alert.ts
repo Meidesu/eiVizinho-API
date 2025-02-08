@@ -33,7 +33,9 @@ export default class Alert extends BaseModel {
 
   @hasMany(() => File, {
     foreignKey: 'alert_id',
-    
   })
   declare media: HasMany<typeof File>
+
+  @column()
+  declare userId: number
 }

@@ -22,7 +22,7 @@ export default class GeocodingProvider {
   async reverseGeocode({ latitude, longitude }: Coordinates): Promise<string> {
     const request: ReverseGeocodeRequest = {
       params: {
-        key: env.get("GOOGLE_MAPS_API_KEY"),
+        key: env.get('GOOGLE_MAPS_API_KEY'),
         latlng: [latitude, longitude],
         language: Language.pt_BR,
       },

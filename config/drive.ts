@@ -9,7 +9,7 @@ const driveConfig = defineConfig({
    * The services object can be used to configure multiple file system
    * services each using the same or a different driver.
    */
-  services: { 
+  services: {
     fs: services.fs({
       location: app.makePath('storage'),
       serveFiles: true,
@@ -18,7 +18,6 @@ const driveConfig = defineConfig({
     }),
 
     gcs: services.gcs({
-      
       keyFilename: env.get('GCS_KEY_FILENAME'),
       bucket: env.get('GCS_BUCKET'),
       visibility: 'public',

@@ -1,16 +1,23 @@
 import vine from '@vinejs/vine'
 import { AlertCategoryResponseValidator } from './alert_category_validator.js'
 import { type MediaFileType } from '../config/files_config.js'
-import { datetimeRule } from './datetime_rulte.js'
+import { datetimeRule } from './rules/datetime_rule.js'
+import { arrayRule } from './rules/array_rule.js'
+import { cpfRule } from '#validators/rules/cpf_rule'
 
 export const CreateAlertValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(1),
     approximateDtHr: vine.string().use(datetimeRule()),
 
-    categoriesId: vine
-      .array(vine.number().exists({ table: 'alert_categories', column: 'id' }))
-      .notEmpty(),
+    categoriesId:
+      // vine.array(vine.number().exists({ table: 'alert_categories', column: 'id' })).notEmpty(),
+      vine
+        .string()
+        .trim()
+        .use(arrayRule())
+        .transform((value) => JSON.parse(value) as Array<number>),
+
     location: vine.unionOfTypes([
       vine.string().coordinates(),
       vine.object({
@@ -26,7 +33,7 @@ export const AlertResponseValidator = vine.compile(
     id: vine.number(),
     name: vine.string().trim(),
     approximateDtHr: vine.string().use(datetimeRule()),
-    
+
     categories: vine.array(AlertCategoryResponseValidator),
     location: vine.object({
       description: vine.string().trim(),
@@ -44,16 +51,28 @@ export const AlertResponseValidator = vine.compile(
         updatedAt: vine.string(),
       })
     ),
-    createdAt: vine.string(),//TODO: Change to date() like Meireles was doing. I changed to string to standardize the dates along the app
+    createdAt: vine.string(), //TODO: Change to date() like Meireles was doing. I changed to string to standardize the dates along the app
     updatedAt: vine.string(),
+    user: vine.object({
+      id: vine.number(),
+      fullName: vine.string().minLength(2).maxLength(100),
+      email: vine.string().email(),
+      cpf: vine
+        .string()
+        .use(cpfRule())
+        .transform((value) => value.replace(/\D/g, '')),
+      createdAt: vine.date({ formats: {} }),
+      updatedAt: vine.date({ formats: {} }),
+    }),
   })
 )
 
 export const UpdateAlertValidator = vine.compile(
   vine.object({
     name: vine.string().trim().optional(),
-    categoriesId: vine.array(vine.number().exists({ table: 'alert_categories', column: 'id' })).optional(),
-    mediasId: vine.array(vine.number().exists({ table: 'files', column: 'id' })).optional()
+    categoriesId: vine
+      .array(vine.number().exists({ table: 'alert_categories', column: 'id' }))
+      .optional(),
+    mediasId: vine.array(vine.number().exists({ table: 'files', column: 'id' })).optional(),
   })
 )
-
