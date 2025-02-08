@@ -16,8 +16,9 @@ import drive from '@adonisjs/drive/services/main'
 import { File as FileInterface } from './../interfaces/file_dto.js'
 import env from '#start/env'
 import { DateTime } from 'luxon'
+import transmit from '@adonisjs/transmit/services/main'
 import AlertCategory from '#models/alert_category'
-import User from "#models/user";
+import User from '#models/user'
 
 @inject()
 export default class AlertsController {
@@ -89,6 +90,12 @@ export default class AlertsController {
       // updatedAt: alert.updatedAt.toISODate(),
     })
 
+    transmit.broadcast('alerts', {
+      name: alert.name,
+      date: alert.createdAt.toISODate(),
+      category: alert.categories[0].name,
+    })
+
     return response.status(201).send(validated)
   }
 
@@ -128,6 +135,11 @@ export default class AlertsController {
         })
       })
     )
+
+    transmit.broadcast('alerts', {
+      message: 'Novo usuário cadastrado!',
+      user: { name: 'Alice', email: 'alice@email.com' },
+    })
 
     return response.status(200).send(validatedData)
   }

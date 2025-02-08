@@ -3,7 +3,7 @@ import { AlertCategoryResponseValidator } from './alert_category_validator.js'
 import { type MediaFileType } from '../config/files_config.js'
 import { datetimeRule } from './rules/datetime_rule.js'
 import { arrayRule } from './rules/array_rule.js'
-import {cpfRule} from "#validators/rules/cpf_rule";
+import { cpfRule } from '#validators/rules/cpf_rule'
 
 export const CreateAlertValidator = vine.compile(
   vine.object({
