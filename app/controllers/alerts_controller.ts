@@ -17,6 +17,8 @@ import { File as FileInterface } from './../interfaces/file_dto.js'
 import env from '#start/env'
 import { DateTime } from 'luxon'
 import transmit from '@adonisjs/transmit/services/main'
+import AlertCategory from '#models/alert_category'
+import User from '#models/user'
 
 @inject()
 export default class AlertsController {
@@ -30,13 +32,18 @@ export default class AlertsController {
    * @requestBody <CreateAlertValidator>
    * @responseBody 200 - <AlertResponseValidator>
    */
-  async create({ request, response }: HttpContext) {
+  async create({ request, response, auth }: HttpContext) {
     const payload = await request.validateUsing(CreateAlertValidator)
 
-    const alert = await Alert.create({
-      name: payload.name,
-      approximateDtHr: DateTime.fromISO(payload.approximateDtHr),
-    })
+    const user = auth.getUserOrFail()
+
+    for (const categoryId of payload.categoriesId) {
+      await AlertCategory.findOrFail(categoryId)
+    }
+
+    const alert = await user
+      .related('alerts')
+      .create({ name: payload.name, approximateDtHr: DateTime.fromISO(payload.approximateDtHr) })
 
     await alert.related('categories').attach(payload.categoriesId)
     await alert.load('categories')
@@ -78,6 +85,7 @@ export default class AlertsController {
 
     const validated = await AlertResponseValidator.validate({
       ...jsonAlert,
+      user: user.toJSON(),
       // createdAt: alert.createdAt.toISODate(),
       // updatedAt: alert.updatedAt.toISODate(),
     })
@@ -116,6 +124,9 @@ export default class AlertsController {
             })
           }
         }
+
+        const user = await User.findOrFail(alert.userId)
+        jsonAlert.user = user.toJSON()
 
         return await AlertResponseValidator.validate({
           ...jsonAlert,
