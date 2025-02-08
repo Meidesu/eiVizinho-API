@@ -12,7 +12,7 @@ export const datetimeRule = vine.createRule((value: unknown, _, field: FieldCont
     return
   }
 
-  if(!DateTime.fromISO(value).isValid){
+  if (!DateTime.fromISO(value).isValid) {
     field.report("This datetime wasn't in ISO format!", 'datetime', field)
   }
 })
