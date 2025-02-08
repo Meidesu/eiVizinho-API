@@ -13,8 +13,8 @@ export default {
     description: 'Api para o app eiVizinho!',
   },
   snakeCase: true,
-  debug: true, // set to true, to get some useful debug output
-  ignore: ['/swagger', '/docs'],
+  debug: false, // set to true, to get some useful debug output
+  ignore: ['/swagger', '/docs', '/__transmit/*'], // routes to ignore
   preferredPutPatch: 'PUT', // if PUT/PATCH are provided for the same route, prefer PUT
   common: {
     parameters: {}, // OpenAPI conform parameters that are commonly used

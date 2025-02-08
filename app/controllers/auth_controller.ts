@@ -8,7 +8,6 @@ import {
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
 
-
 export default class AuthController {
   /**
    * @login
@@ -18,7 +17,7 @@ export default class AuthController {
   async login({ request, response }: HttpContext) {
     const payload = await request.validateUsing(LoginRequestValidator)
 
-    let user: User | undefined;
+    let user: User | undefined
 
     if ('email' in payload) {
       user = await User.verifyCredentials(payload.email, payload.password)

@@ -26,7 +26,7 @@ export const AlertResponseValidator = vine.compile(
     id: vine.number(),
     name: vine.string().trim(),
     approximateDtHr: vine.string().use(datetimeRule()),
-    
+
     categories: vine.array(AlertCategoryResponseValidator),
     location: vine.object({
       description: vine.string().trim(),
@@ -44,7 +44,7 @@ export const AlertResponseValidator = vine.compile(
         updatedAt: vine.string(),
       })
     ),
-    createdAt: vine.string(),//TODO: Change to date() like Meireles was doing. I changed to string to standardize the dates along the app
+    createdAt: vine.string(), //TODO: Change to date() like Meireles was doing. I changed to string to standardize the dates along the app
     updatedAt: vine.string(),
   })
 )
@@ -52,8 +52,9 @@ export const AlertResponseValidator = vine.compile(
 export const UpdateAlertValidator = vine.compile(
   vine.object({
     name: vine.string().trim().optional(),
-    categoriesId: vine.array(vine.number().exists({ table: 'alert_categories', column: 'id' })).optional(),
-    mediasId: vine.array(vine.number().exists({ table: 'files', column: 'id' })).optional()
+    categoriesId: vine
+      .array(vine.number().exists({ table: 'alert_categories', column: 'id' }))
+      .optional(),
+    mediasId: vine.array(vine.number().exists({ table: 'files', column: 'id' })).optional(),
   })
 )
-
