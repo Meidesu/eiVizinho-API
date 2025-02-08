@@ -63,5 +63,3 @@ router.get('/docs', async () => {
 router.get('/__transmit/events', [EventStreamController])
 router.post('/__transmit/subscribe', [SubscribeController])
 router.post('/__transmit/unsubscribe', [UnsubscribeController])
-
-router.get('/notifications', '#controllers/notifications_controller.get')
