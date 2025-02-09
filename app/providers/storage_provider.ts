@@ -4,7 +4,7 @@ import { cuid } from '@adonisjs/core/helpers'
 import { Exception } from '@adonisjs/core/exceptions'
 import drive from '@adonisjs/drive/services/main'
 import env from '#start/env'
-import fs from 'fs/promises'
+import fs from 'node:fs/promises'
 
 export interface SavedFile {
   key: string
@@ -68,7 +68,7 @@ export default class StorageProvider {
   }
 }
 
-async function uploadMedia(media: MultipartFile[]): Promise<UploadedImage[]> {
+export async function uploadMedia(media: MultipartFile[]): Promise<UploadedImage[]> {
   if (!media || media.length === 0) {
     return []
   }
