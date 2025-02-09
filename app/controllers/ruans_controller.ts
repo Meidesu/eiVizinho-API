@@ -27,11 +27,10 @@ export default class RuansController {
   async test({ request, response }: HttpContext) {
     const media = request.files('media')
 
-    if(media){
+    if (media) {
       return response.status(200).send(await this.storageProvider.saveFiles(media))
     }
 
     return response.status(400)
-    
   }
 }

@@ -7,6 +7,7 @@ import {
 } from '#validators/auth_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
+
 import { UserValidator } from '#validators/user_validator'
 export default class AuthController {
   /**
