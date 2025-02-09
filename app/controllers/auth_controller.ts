@@ -17,7 +17,7 @@ export default class AuthController {
   async login({ request, response }: HttpContext) {
     const payload = await request.validateUsing(LoginRequestValidator)
 
-    let user: User | undefined;
+    let user: User | undefined
 
     if ('email' in payload) {
       user = await User.verifyCredentials(payload.email, payload.password)
@@ -59,24 +59,21 @@ export default class AuthController {
   }
   /**
    * @getData
-   * @requestBody <UserValidator>.append("id": 1, "fullName": "xxxxx", "email": "", "cpf": "xxxxxxxx", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z")
-   * @responseBody 200 - <Dados do usuário autenticado>
+   * @responseBody 200 - <UserValidator>.append("id": 1, "fullName": "xxxxx", "email": "", "cpf": "xxxxxxxx", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z")
    */
   async getData({ auth, response }: HttpContext) {
     try {
-      const user = await auth.user;
+      const user = await auth.user
       if (!user) {
-        console.log("Usuário não autenticado");
-        return response.unauthorized('Usuário não autenticado');
+        console.log('Usuário não autenticado')
+        return response.unauthorized('Usuário não autenticado')
       }
-    
-      const validated = await UserValidator.validate(user.serialize());
-      return response.ok(validated);
+
+      const validated = await UserValidator.validate(user.serialize())
+      return response.ok(validated)
     } catch (error) {
-      console.log('Erro ao obter dados do usuário:', error);
-      return response.internalServerError('Erro ao obter dados do usuário');
-    
+      console.log('Erro ao obter dados do usuário:', error)
+      return response.internalServerError('Erro ao obter dados do usuário')
     }
   }
 }
-
