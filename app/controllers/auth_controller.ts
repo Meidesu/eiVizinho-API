@@ -60,8 +60,7 @@ export default class AuthController {
   }
   /**
    * @getData
-   * @requestBody <UserValidator>.append("id": 1, "fullName": "xxxxx", "email": "", "cpf": "xxxxxxxx", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z")
-   * @responseBody 200 - <Dados do usuário autenticado>
+   * @responseBody 200 - <UserValidator>.append("id": 1, "fullName": "xxxxx", "email": "", "cpf": "xxxxxxxx", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z")
    */
   async getData({ auth, response }: HttpContext) {
     try {
