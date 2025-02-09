@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { cpfRule } from './cpf_rule.js'
+import { cpfRule } from './rules/cpf_rule.js'
 
 const credentialIdentifier = vine.group([
   vine.group.if((data) => 'email' in data, {
