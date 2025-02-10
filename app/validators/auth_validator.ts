@@ -73,3 +73,17 @@ export const RegisterResponseValidator = vine.compile(
     updatedAt: vine.date({ formats: {} }),
   })
 )
+
+export const RequestResetPasswordValidator = vine.compile(vine.object({
+  email: vine.string().email()
+}))
+
+export const ResetPasswordValidator = vine.compile(vine.object({
+  password: vine
+      .string()
+      .minLength(8)
+      .maxLength(32)
+      .confirmed({ confirmationField: 'passwordConfirmation' }),
+}))
+
+

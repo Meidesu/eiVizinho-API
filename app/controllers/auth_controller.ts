@@ -4,11 +4,16 @@ import {
   LoginResponseValidator,
   RegisterRequestValidator,
   RegisterResponseValidator,
+  RequestResetPasswordValidator,
+  ResetPasswordValidator,
 } from '#validators/auth_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
+import crypto from 'crypto'
+import mail from '@adonisjs/mail/services/main'
 
 import { UserValidator } from '#validators/user_validator'
+import { DateTime } from 'luxon'
 export default class AuthController {
   /**
    * @login
@@ -77,4 +82,94 @@ export default class AuthController {
       return response.internalServerError('Erro ao obter dados do usuário')
     }
   }
+
+  /**
+   * @requestPasswordReset
+   * @requestBody {"email": "johndoe@gmail.com"}
+   * @responseBody 200 - { message: "Cheque seu email para confirmar a solicitação de recuperação." }
+   */
+  public async requestPasswordReset({ request, response }: HttpContext) {
+
+    const payload = await request.validateUsing(RequestResetPasswordValidator)
+
+    const user = await User.findBy('email', payload.email)
+
+    if (!user) {
+      return response.notFound('Usuário não existe')
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex')
+
+    user.passwordResetToken = resetToken
+    user.passwordResetTokenExpiration = DateTime.now().plus({ minutes: 10 })
+    await user.save()
+
+    const emailDomain = env.get('SMTP_USERNAME')
+
+    await mail.send((message) => {
+      message
+        .to(payload.email)
+        .from(emailDomain)
+        .subject('Solicitação de recuperação de senha - EI VIZINHO!')
+        .html(`<p>Oii! está aqui seu token para solicitar a troca da senha: <strong>${resetToken}</strong></p>`)
+    })
+
+    return response.ok({ message: 'Cheque seu email para trocar a senha' })
+  }
+
+  /**
+   * @validateResetToken
+   * @paramPath token - Token do request - @type(string) @required
+   * @responseBody 200 - { message: "Token válido." }
+   * @responseBody 404 - { message: "Token inválido." }
+   * @responseBody 400 - { message: "Token expirado." }
+   */
+  public async validateResetToken({ params, response }: HttpContext) {
+    const token = params.token
+    const user = await User.findBy('passwordResetToken', token)
+
+    if (!user) {
+      return response.notFound({ message: 'Token inválido' })
+    }
+
+    const currentTime = new Date().getTime()
+    if (user.passwordResetTokenExpiration && currentTime > user.passwordResetTokenExpiration.toMillis()) {
+      return response.badRequest({ message: 'Token expirado' })
+    }
+
+    return response.ok({ message: 'Token válido' })
+  }
+
+  /**
+   * @resetPassword
+   * @paramPath token - Token do request - @type(string) @required
+   * @requestBody { "password": "newPassword123", "passwordConfirmation": "newPassword123" }
+   * @responseBody 200 - { message: "Senha alterada com sucesso." }
+   * @responseBody 400 - { message: "Senhas não correspondentes." }
+   * @responseBody 404 - { message: "Token inválido." }
+   * @responseBody 400 - { message: "Token expirado." }
+   */
+  public async resetPassword({ request, response, params }: HttpContext) {
+    const token = params.token
+    const payload = await request.validateUsing(ResetPasswordValidator)
+
+    const user = await User.findBy('passwordResetToken', token)
+
+    if (!user) {
+      return response.notFound({ message: 'Token inválido' })
+    }
+
+    const currentTime = new Date().getTime()
+    if (user.passwordResetTokenExpiration && currentTime > user.passwordResetTokenExpiration.toMillis()) {
+      return response.badRequest({ message: 'Token expirado' })
+    }
+
+    user.password = payload.password
+    user.passwordResetToken = null
+    user.passwordResetTokenExpiration = null
+    await user.save()
+
+    return response.ok({ message: 'Senha alterada com sucesso' })
+  }
+
 }
