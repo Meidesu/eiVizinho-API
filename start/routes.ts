@@ -21,6 +21,9 @@ router
   .group(() => {
     router.post('/login', '#controllers/auth_controller.login')
     router.post('/signup', '#controllers/auth_controller.register')
+    router.post('/password/reset/request', '#controllers/auth_controller.requestPasswordReset')
+    router.get('/password/reset/validate/:token', '#controllers/auth_controller.validateResetToken')  
+    router.post('/password/reset/:token', '#controllers/auth_controller.resetPassword') 
   })
   .prefix('/auth')
 
